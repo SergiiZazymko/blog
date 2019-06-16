@@ -42,6 +42,7 @@
         "test": "phpunit"
     },
     "require-dev": {
-        "zendframework/zend-developer-tools": "^1.2"
+        "zendframework/zend-developer-tools": "^1.2",
+        "symfony/var-dumper": "^4.3"
     }
 }

@@ -7,10 +7,11 @@
 
 namespace Application;
 
+use Application\Controller\Factory\IndexControllerFactory;
+use Application\Controller\Factory\PostControllerFactory;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Zend\Router\Http\Literal;
 use Zend\Router\Http\Segment;
-use Zend\ServiceManager\Factory\InvokableFactory;
 
 return [
     'doctrine' => [
@@ -49,11 +50,31 @@ return [
                     ],
                 ],
             ],
+            'posts' => [
+                'type'    => Segment::class,
+                'options' => [
+                    'route'    => '/posts[/:action[/:id]]',
+                    'constraints' => [
+                        'action' => '(add)',
+                        'id' => '[0-9]*'
+                    ],
+                    'defaults' => [
+                        'controller' => Controller\PostController::class,
+                        'action'     => 'index',
+                    ],
+                ],
+            ],
         ],
     ],
     'controllers' => [
         'factories' => [
-            Controller\IndexController::class => InvokableFactory::class,
+            Controller\IndexController::class => IndexControllerFactory::class,
+            Controller\PostController::class => PostControllerFactory::class,
+        ],
+    ],
+    'service_manager' => [
+        'factories' => [
+            Service\PostManager::class => Service\Factory\PostMangerFactory::class,
         ],
     ],
     'view_manager' => [
