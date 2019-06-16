@@ -8,6 +8,7 @@
 
 namespace Application\Service;
 
+use Application\Entity\Comment;
 use Application\Entity\Post;
 use Application\Entity\Tag;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -64,6 +65,33 @@ class PostManager
         $post->setStatus($data['status']);
 
         $this->addTagsToPost($data['tags'], $post);
+
+        $this->dem->flush();
+    }
+
+    /**
+     * @param Post $post
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function removePost(Post $post)
+    {
+        /** @var ArrayCollection $comments */
+        $comments = $post->getComments();
+
+        /** @var Comment $comment */
+        foreach ($comments as $comment) {
+            $this->dem->remove($comment);
+        }
+
+        /** @var ArrayCollection $tags */
+        $tags = $post->getTags();
+
+        foreach ($tags as $tag) {
+            $post->removeTagAssociation($tags);
+        }
+
+        $this->dem->remove($post);
 
         $this->dem->flush();
     }

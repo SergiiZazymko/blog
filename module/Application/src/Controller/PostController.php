@@ -116,4 +116,28 @@ class PostController extends AbstractActionController
             'form' => $this->form,
         ]);
     }
+
+    /**
+     * @return void|\Zend\Http\Response
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
+     */
+    public function deleteAction()
+    {
+        /** @var string $id */
+        $id = $this->params()->fromRoute('id', -1);
+
+        /** @var Post $post */
+        $post = $this->dem->getRepository(Post::class)->find($id);
+
+        if (!$post) {
+            $this->getResponse()->setStatusCode(404);
+            return;
+        }
+
+        $this->postManager->removePost($post);
+
+        return $this->redirect()->toRoute('posts');
+    }
 }

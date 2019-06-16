@@ -11,8 +11,9 @@ use Application\Entity\Post;
     <div class="col-md-12">
         <?php /** @var Post $post */ ?>
         <?php foreach ($posts as $post): ?>
-            <h3><a href="#"><?= $post->getTitle() ?></a></h3>
+            <h3><a href="<?= $this->url('posts', ['action' => 'view', 'id' => $post->getId()]); ?>"><?= $post->getTitle() ?></a></h3>
             <a class="btn btn-primary" href="<?= $this->url('posts', ['action' => 'edit', 'id' => $post->getId()]); ?>" role="button">Edit</a>
+            <a class="btn btn-primary" href="<?= $this->url('posts', ['action' => 'delete', 'id' => $post->getId()]); ?>" role="button" onclick="confirm('Are you sure?')">Delete</a>
             <p><?= $post->getContent() ?></p>
         <?php endforeach; ?>
     </div>

@@ -55,7 +55,7 @@ return [
                 'options' => [
                     'route'    => '/posts[/:action[/:id]]',
                     'constraints' => [
-                        'action' => '(add|edit)',
+                        'action' => '(add|edit|delete)',
                         'id' => '[0-9]*'
                     ],
                     'defaults' => [
