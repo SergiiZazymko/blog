@@ -59,9 +59,11 @@ class PostManager
      */
     public function editPost(Post $post, array $data)
     {
-        $post->exchangeArray($data);
+        $post->setTitle($data['title']);
+        $post->setContent($data['content']);
+        $post->setStatus($data['status']);
 
-        $this->addTagsToPost($post);
+        $this->addTagsToPost($data['tags'], $post);
 
         $this->dem->flush();
     }

@@ -79,7 +79,7 @@ class PostController extends AbstractActionController
     }
 
     /**
-     *
+     * @return void|\Zend\Http\Response|ViewModel
      */
     public function editAction()
     {
@@ -95,7 +95,11 @@ class PostController extends AbstractActionController
         }
 
         if ($this->getRequest()->isPost()) {
+            /** @var array $data */
+            $data = $this->params()->fromPost();
 
+            $this->postManager->editPost($post, $data);
+            return $this->redirect()->toRoute('posts');
         } else {
             /** @var array $data */
             $data = [
