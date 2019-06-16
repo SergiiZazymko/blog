@@ -37,7 +37,7 @@ class PostManager
      * @param $data
      * @throws \Exception
      */
-    public function addNewPost($data)
+    public function addNewPost(array $data)
     {
         /** @var Post $post */
         $post = new Post;
@@ -51,6 +51,39 @@ class PostManager
 
         $this->dem->persist($post);
         $this->dem->flush();
+    }
+
+    /**
+     * @param $post
+     * @param $data
+     */
+    public function editPost(Post $post, array $data)
+    {
+        $post->exchangeArray($data);
+
+        $this->addTagsToPost($post);
+
+        $this->dem->flush();
+    }
+
+    /**
+     * @param Post $post
+     * @return string
+     */
+    public function convertTagsToString(Post $post)
+    {
+        /** @var ArrayCollection $tags */
+        $tags = $post->getTags();
+
+        /** @var array $tagArray */
+        $tagArray = [];
+
+        /** @var Tag $tag */
+        foreach ($tags as $tag) {
+            $tagArray[] = $tag->getName();
+        }
+
+        return implode(', ', $tagArray);
     }
 
     /**

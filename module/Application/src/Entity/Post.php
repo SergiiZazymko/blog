@@ -2,6 +2,7 @@
 
 namespace Application\Entity;
 
+use Application\Traits\ExchangeTrait;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -13,6 +14,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Post
 {
+    use ExchangeTrait;
+
     /** @const int STATUS_DRAFT */
     const STATUS_DRAFT = 1;
 

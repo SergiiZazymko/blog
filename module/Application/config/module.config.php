@@ -55,12 +55,35 @@ return [
                 'options' => [
                     'route'    => '/posts[/:action[/:id]]',
                     'constraints' => [
-                        'action' => '(add)',
+                        'action' => '(add|edit)',
                         'id' => '[0-9]*'
                     ],
                     'defaults' => [
                         'controller' => Controller\PostController::class,
                         'action'     => 'index',
+                    ],
+                ],
+            ],
+        ],
+    ],
+    'navigation' => [
+        'default' => [
+            [
+                'label' => 'Home',
+                'route' => 'home',
+            ],
+            [
+                'label' => 'Application',
+                'route' => 'application',
+            ],
+            [
+                'label' => 'Posts',
+                'route' => 'posts',
+                'pages' => [
+                    [
+                        'label' => 'Add',
+                        'route' => 'posts',
+                        'action' => 'add',
                     ],
                 ],
             ],
