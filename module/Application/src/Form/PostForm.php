@@ -96,7 +96,7 @@ class PostForm extends Form
 
         $this->add([
             'type' => 'submit',
-            'name' => 'submi',
+            'name' => 'submit',
             'attributes' => [
                 'id' => 'submit',
                 'value' => 'Create',

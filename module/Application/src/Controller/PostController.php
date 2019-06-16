@@ -12,6 +12,7 @@ use Application\Form\PostForm;
 use Application\Service\PostManager;
 use Doctrine\ORM\EntityManager;
 use Zend\Mvc\Controller\AbstractActionController;
+use Zend\View\Model\ViewModel;
 
 /**
  * Class PostController
@@ -43,6 +44,14 @@ class PostController extends AbstractActionController
 
     public function addAction()
     {
+        if ($this->getRequest()->isPost() && $this->form->setData($this->params()->fromPost())->isValid()) {
+            $this->postManager->addNewPost($this->form->getData());
 
+            return $this->redirect()->toRoute('application');
+        }
+
+        return new ViewModel([
+            'form' => $this->form,
+        ]);
     }
 }
