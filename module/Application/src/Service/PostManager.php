@@ -117,6 +117,39 @@ class PostManager
     }
 
     /**
+     * @param Post $post
+     * @return string
+     */
+    public function getCommentCountStr(Post $post)
+    {
+        /** @var int $commentCount */
+        $commentCount = count($post->getComments());
+        if ($commentCount == 0)
+            return 'No comments';
+        else if ($commentCount == 1)
+            return '1 comment';
+        else
+            return $commentCount . ' comments';
+    }
+
+    /**
+     * @param Post $post
+     * @param array $data
+     */
+    public function addCommentToPost(Post $post, array $data)
+    {
+        /** @var Comment $comment */
+        $comment = new Comment;
+        $comment->exchangeArray($data);
+        $comment->setContent($data['comment']);
+        $comment->setPost($post);
+        $comment->setDateCreated(new \DateTime());
+
+        $this->dem->persist($comment);
+        $this->dem->flush();
+    }
+
+    /**
      * @param string $tagsStr
      * @param Post $post
      * @throws \Doctrine\ORM\ORMException

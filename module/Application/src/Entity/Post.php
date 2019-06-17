@@ -63,7 +63,6 @@ class Post
      * @var ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="Comment", mappedBy="post")
-     * @ORM\JoinColumn(name="id", referencedColumnName="post_id")
      */
     private $comments;
 

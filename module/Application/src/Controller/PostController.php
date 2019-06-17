@@ -9,9 +9,11 @@
 namespace Application\Controller;
 
 use Application\Entity\Post;
+use Application\Form\CommentForm;
 use Application\Form\PostForm;
 use Application\Service\PostManager;
 use Doctrine\ORM\EntityManager;
+use Zend\Form\Form;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 
@@ -29,6 +31,19 @@ class PostController extends AbstractActionController
 
     /** @var PostManager $postManager */
     private $postManager;
+
+    /**
+     * PostController constructor.
+     * @param PostForm $form
+     * @param EntityManager $dem
+     * @param PostManager $posManager
+     */
+    public function __construct(PostForm $form, EntityManager $dem, PostManager $postManager)
+    {
+        $this->form = $form;
+        $this->dem = $dem;
+        $this->postManager = $postManager;
+    }
 
     /**
      * @return ViewModel
@@ -49,16 +64,36 @@ class PostController extends AbstractActionController
     }
 
     /**
-     * PostController constructor.
-     * @param PostForm $form
-     * @param EntityManager $dem
-     * @param PostManager $posManager
+     * @return void|\Zend\Http\Response|ViewModel
      */
-    public function __construct(PostForm $form, EntityManager $dem, PostManager $postManager)
+    public function viewAction()
     {
-        $this->form = $form;
-        $this->dem = $dem;
-        $this->postManager = $postManager;
+        /** @var Form $form */
+        $form = new CommentForm;
+
+        /** @var int $id */
+        $id = $this->params()->fromRoute('id', -1);
+
+        /** @var Post $post */
+        $post = $this->dem->getRepository(Post::class)->find($id);
+
+        if (!$post) {
+            $this->getRequest()->setStatusCode(404);
+            return;
+        }
+
+        if ($this->getRequest()->isPost() && $form->setData($this->params()->fromPost())->isValid()) {
+            $this->postManager->addCommentToPost($post, $form->getData());
+
+            return $this->redirect()->toRoute('posts', ['action' => 'view', 'id' => $post->getId()]);
+        }
+
+        return new ViewModel([
+            'post' => $post,
+            'commentCount' => $this->postManager->getCommentCountStr($post),
+            'form' => $form,
+        ]);
+
     }
 
     /**

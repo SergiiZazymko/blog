@@ -2,6 +2,7 @@
 
 namespace Application\Entity;
 
+use Application\Traits\ExchangeTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -12,6 +13,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Comment
 {
+    use ExchangeTrait;
+
     /**
      * @var int
      *
@@ -24,7 +27,7 @@ class Comment
     /**
      * @var Post
      *
-     * @ORM\ManyToOne(targetEntity="Comment", inversedBy="comments")
+     * @ORM\ManyToOne(targetEntity="Post", inversedBy="comments")
      * @ORM\JoinColumn(name="post_id", referencedColumnName="id")
      */
     private $post;
