@@ -60,6 +60,7 @@ class PostController extends AbstractActionController
 
         return new ViewModel([
             'posts' => $posts,
+            'postManager' => $this->postManager,
         ]);
     }
 

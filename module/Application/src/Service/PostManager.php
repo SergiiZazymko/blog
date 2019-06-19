@@ -11,6 +11,7 @@ namespace Application\Service;
 use Application\Entity\Comment;
 use Application\Entity\Post;
 use Application\Entity\Tag;
+use Application\Repository\PostRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManager;
 use Zend\Filter\StaticFilter;
@@ -147,6 +148,63 @@ class PostManager
 
         $this->dem->persist($comment);
         $this->dem->flush();
+    }
+
+    /**
+     * @param $post
+     * @return string
+     */
+    public function getPostStatusAsString($post)
+    {
+        switch ($post->getStatus()) {
+            case Post::STATUS_DRAFT: return 'Draft';
+            case Post::STATUS_PUBLISHED: return 'Published';
+        }
+
+        return 'Unknown';
+    }
+
+    /**
+     * @return array
+     */
+    public function getTagCloud()
+    {
+        /** @var array $tagCloud */
+        $tagCloud = [];
+
+        /** @var PostRepository $postRepository */
+        $postRepository = $this->dem->getRepository(Post::class);
+
+        /** @var int $totalPostsCount */
+        $totalPostsCount = count($postRepository->findAllHavingAnyTag());
+
+        /** @var array $tags */
+        $tags = $this->dem
+            ->getRepository(Tag::class)
+            ->findAll();
+
+        /** @var Tag $tag */
+        foreach ($tags as $tag) {
+            /** @var array $postsByTag */
+            $postsByTag = $postRepository->findAllByTagName($tag->getName());
+
+            if ($postsCount = count($postsByTag)) {
+                $tagCloud[$tag->getName()] = $postsCount;
+            }
+        }
+
+        /** @var array $normalizedTagCloud */
+        $normalizedTagCloud = [];
+
+        /**
+         * @var string $tag
+         * @var int $count
+         */
+        foreach ($tagCloud as $tag => $count) {
+            $normalizedTagCloud[$tag] = $count / $totalPostsCount;
+        }
+
+        return $normalizedTagCloud;
     }
 
     /**

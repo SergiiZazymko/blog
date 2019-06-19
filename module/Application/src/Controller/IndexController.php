@@ -8,6 +8,8 @@
 namespace Application\Controller;
 
 use Application\Entity\Post;
+use Application\Repository\PostRepository;
+use Application\Service\PostManager;
 use Doctrine\ORM\EntityManager;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
@@ -21,13 +23,17 @@ class IndexController extends AbstractActionController
     /** @var EntityManager $dem */
     private $dem;
 
+    /** @var PostManager $postManager */
+    private $postManager;
+
     /**
      * IndexController constructor.
      * @param EntityManager $dem
      */
-    public function __construct(EntityManager $dem)
+    public function __construct(EntityManager $dem, PostManager $postManager)
     {
         $this->dem = $dem;
+        $this->postManager = $postManager;
     }
 
     /**
@@ -36,15 +42,26 @@ class IndexController extends AbstractActionController
      */
     public function indexAction()
     {
-        /** @var array $posts */
-        $posts = $this->dem->getRepository(Post::class)
-            ->findBy(
+        /** @var PostRepository $postRepostory */
+        $postRepostory =  $this->dem->getRepository(Post::class);
+
+        if ($tag = $this->params()->fromQuery('tag')) {
+            $posts = $postRepostory->findAllByTagName($tag);
+        } else {
+            /** @var array $posts */
+            $posts = $postRepostory->findBy(
                 ['status' => Post::STATUS_PUBLISHED],
                 ['dateCreated' => 'DESC']
             );
+        }
+
+        /** @var array $tagCloud */
+        $tagCloud = $this->postManager->getTagCloud();
 
         return new ViewModel([
             'posts' => $posts,
+            'tagCloud' => $tagCloud,
+            'postManager' => $this->postManager,
         ]);
     }
 }

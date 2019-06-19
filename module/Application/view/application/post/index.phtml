@@ -5,16 +5,50 @@ namespace Application;
 use Application\Entity\Post;
 
 ?>
-<div class="container">
-    <div class="col-md-10"><h1>Posts</h1></div>
-    <div class="col-md-2"><a class="btn btn-primary" href="<?= $this->url('posts', ['action' => 'add']); ?>" role="button">Add new post</a></div>
-    <div class="col-md-12">
-        <?php /** @var Post $post */ ?>
-        <?php foreach ($posts as $post): ?>
-            <h3><a href="<?= $this->url('posts', ['action' => 'view', 'id' => $post->getId()]); ?>"><?= $post->getTitle() ?></a></h3>
-            <a class="btn btn-primary" href="<?= $this->url('posts', ['action' => 'edit', 'id' => $post->getId()]); ?>" role="button">Edit</a>
-            <a class="btn btn-primary" href="<?= $this->url('posts', ['action' => 'delete', 'id' => $post->getId()]); ?>" role="button" onclick="confirm('Are you sure?')">Delete</a>
-            <p><?= $post->getContent() ?></p>
-        <?php endforeach; ?>
-    </div>
-</div>
+
+<h1>Manage Posts</h1>
+
+<p>
+    <a class="btn btn-default" href="
+    <?= $this->url('posts', ['action'=>'add']); ?>">
+        New Post
+    </a>
+</p>
+
+<table class="table table-striped">
+
+    <tr>
+        <th>ID</th>
+        <th>Post Title</th>
+        <th>Date Created</th>
+        <th>Status</th>
+        <th>Actions</th>
+    </tr>
+
+    <?php /** @var Post $post */ ?>
+    <?php foreach ($posts as $post): ?>
+
+        <tr>
+            <td><?= $this->escapeHtml($post->getId()); ?></td>
+            <td>
+                <a href="<?= $this->url('posts', ['action'=>'view', 'id'=>$post->getId()]); ?>">
+                    <?= $this->escapeHtml($post->getTitle()); ?>
+                </a>
+            </td>
+            <td><?= $this->escapeHtml($post->getDateCreated()->format('Y:m:d H:i:s')); ?></td>
+            <td><?= $this->escapeHtml($postManager->getPostStatusAsString($post)); ?></td>
+            <td>
+                <a class="btn btn-info" href="<?= $this->url('posts',
+                    ['action'=>'edit', 'id'=>$post->getId()]); ?>">
+                    <span class="glyphicon glyphicon-pencil" ></span> Edit
+                </a>
+                <a class="btn btn-danger" href="<?= $this->url('posts',
+                    ['action'=>'delete', 'id'=>$post->getId()]); ?>">
+                    <span class="glyphicon glyphicon-remove"></span> Delete
+                </a>
+            </td>
+        </tr>
+
+    <?php endforeach; ?>
+
+</table>
