@@ -52,3 +52,8 @@ use Application\Entity\Post;
     <?php endforeach; ?>
 
 </table>
+
+<?= $this->paginationControl($posts,
+    'Sliding',
+    'application/partial/paginator',
+    ['route' => 'posts']); ?>

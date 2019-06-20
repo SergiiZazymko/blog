@@ -12,6 +12,8 @@ use Application\Repository\PostRepository;
 use Application\Service\PostManager;
 use Doctrine\ORM\EntityManager;
 use Zend\Mvc\Controller\AbstractActionController;
+use Zend\Paginator\Adapter\ArrayAdapter;
+use Zend\Paginator\Paginator;
 use Zend\View\Model\ViewModel;
 
 /**
@@ -42,6 +44,9 @@ class IndexController extends AbstractActionController
      */
     public function indexAction()
     {
+        /** @var string $page */
+        $page = $this->params()->fromQuery('page', 1);
+
         /** @var PostRepository $postRepostory */
         $postRepostory =  $this->dem->getRepository(Post::class);
 
@@ -55,13 +60,31 @@ class IndexController extends AbstractActionController
             );
         }
 
+        /** @var Paginator $paginator */
+        $paginator = $this->createPaginator($posts);
+        $paginator->setCurrentPageNumber($page);
+
         /** @var array $tagCloud */
         $tagCloud = $this->postManager->getTagCloud();
 
         return new ViewModel([
-            'posts' => $posts,
+            'posts' => $paginator,
             'tagCloud' => $tagCloud,
             'postManager' => $this->postManager,
+            'tag' => $tag,
         ]);
+    }
+
+    /**
+     * @param array $items
+     * @return Paginator
+     */
+    private function createPaginator(array $items): Paginator
+    {
+        /** @var Paginator $paginator */
+        $paginator = new Paginator(new ArrayAdapter($items));
+        $paginator->setItemCountPerPage(PostController::ITEM_COUNT_PER_PAGE);
+
+        return $paginator;
     }
 }

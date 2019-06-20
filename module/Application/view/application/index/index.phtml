@@ -40,6 +40,11 @@ use Application\Entity\Post;
 
         <?php endforeach; ?>
 
+        <?= $this->paginationControl($posts,
+            'Sliding',
+            'application/partial/paginator',
+            ['route' => 'application', 'tag' => $tag]); ?>
+
     </div>
 
     <div class="col-md-4">
@@ -48,12 +53,12 @@ use Application\Entity\Post;
                 <h3 class="panel-title">Popular Tags</h3>
             </div>
             <div class="panel-body">
-                <?php foreach($this->tagCloud as $tagName=>$frequency): ?>
+                <?php foreach($this->tagCloud as $tagName => $frequency): ?>
 
                     <a href="<?= $this->url('application', ['action'=>'index'],
                         ['query'=>['tag'=>$tagName]]); ?>">
 
-                    <span style="font-size:{{{PHP12}}}em">
+                    <span style="font-size:<?= ceil(10 * $frequency); ?>em">
                         <?= $this->escapeHtml($tagName); ?>
                     </span>
 

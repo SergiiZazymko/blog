@@ -15,6 +15,8 @@ use Application\Service\PostManager;
 use Doctrine\ORM\EntityManager;
 use Zend\Form\Form;
 use Zend\Mvc\Controller\AbstractActionController;
+use Zend\Paginator\Adapter\ArrayAdapter;
+use Zend\Paginator\Paginator;
 use Zend\View\Model\ViewModel;
 
 /**
@@ -23,6 +25,12 @@ use Zend\View\Model\ViewModel;
  */
 class PostController extends AbstractActionController
 {
+    /** @const ITEM_COUNT_PER_PAGE */
+    const ITEM_COUNT_PER_PAGE = 5;
+
+    /** @const CURRENT_PAGE_NUMBER */
+    const CURRENT_PAGE_NUMBER = 1;
+
     /** @var PostForm $form */
     private $form;
 
@@ -51,15 +59,22 @@ class PostController extends AbstractActionController
      */
     public function indexAction()
     {
+        /** @var string $page */
+        $page = $this->params()->fromQuery('page', 1);
+
         /** @var array $posts */
         $posts = $this->dem->getRepository(Post::class)
             ->findBy(
                 ['status' => Post::STATUS_PUBLISHED],
                 ['dateCreated' => 'DESC']
-            );
+        );
+
+        /** @var Paginator $paginator */
+        $paginator = $this->createPaginator($posts);
+        $paginator->setCurrentPageNumber($page);
 
         return new ViewModel([
-            'posts' => $posts,
+            'posts' => $paginator,
             'postManager' => $this->postManager,
         ]);
     }
@@ -175,5 +190,18 @@ class PostController extends AbstractActionController
         $this->postManager->removePost($post);
 
         return $this->redirect()->toRoute('posts');
+    }
+
+    /**
+     * @param array $items
+     * @return Paginator
+     */
+    private function createPaginator(array $items): Paginator
+    {
+        /** @var Paginator $paginator */
+        $paginator = new Paginator(new ArrayAdapter($items));
+        $paginator->setItemCountPerPage(static::ITEM_COUNT_PER_PAGE);
+
+        return $paginator;
     }
 }
